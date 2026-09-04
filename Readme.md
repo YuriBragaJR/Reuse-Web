@@ -13,7 +13,6 @@ A aplicação foi estruturada utilizando o **Next.js na versão App Router**, ap
 * **Formulário de Cadastro de Itens (`app/dashboard/novo-item/page.tsx` & `ItemForm.tsx`)**: Dividida entre uma Server Action segura (que lida com o upload físico de imagens para a pasta `public/uploads` e persistência no banco) e um Client Component interativo (que gerencia o estado dinâmico do formulário, alternando entre as finalidades de *Doação* e *Venda* com campo de preço condicional).
 * **Componente de Exclusão com Pop-up (`app/components/DeleteButton.tsx`)**: Componente cliente modularizado responsável por interceptar a ação de exclusão, exibindo um modal de confirmação amigável antes de disparar a Server Action de remoção no banco e revalidar o cache da página.
 
-**Repositório do GitHub**: [Repositório Oficial - ReUse!](https://github.com/YuriBraga-dev/ReUse)
 
 ---
 
@@ -26,7 +25,6 @@ O **Prisma ORM** foi aplicado para realizar a comunicação fortemente tipada co
 * **Cadastro e Persistência (`create`)**: Aplicado na rota de cadastro para salvar novos registros na tabela `Item`, vinculando os dados informados no formulário (título, descrição, categoria, tipo, preço opcional, caminho da imagem e o ID do usuário autenticado). Conta também com verificação de fallback para garantir a existência de um usuário padrão de testes no primeiro acesso.
 * **Exclusão de Registros (`delete`)**: Empregado na Server Action de remoção para deletar um item específico com base no seu ID unicamente gerado, seguido pela revalidação do caminho (`revalidatePath`) para atualizar instantaneamente a interface.
 
-**Repositório de Integração**: [Repositório Oficial (Código Fonte Completo)](https://github.com/YuriBraga-dev/ReUse)
 
 ---
 

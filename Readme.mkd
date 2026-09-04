@@ -1,0 +1,41 @@
+# Relatório Técnico do Projeto ReUse!
+
+Este documento apresenta a consolidação técnica do desenvolvimento da plataforma **ReUse!**, cobrindo a arquitetura em Next.js (App Router), a integração com o Prisma ORM e a estrutura do banco de dados relacional.
+
+---
+
+## 1. Desenvolvimento Next.js (App Router)
+
+A aplicação foi estruturada utilizando o **Next.js na versão App Router**, aproveitando o padrão moderno de componentes de servidor (Server Components) e componentes de cliente (Client Components) para otimizar performance e interatividade.
+
+### Telas Desenvolvidas e Objetivos:
+* **Painel de Gestão e Listagem de Anúncios (`app/page.tsx`)**: Atua como a interface central onde o usuário visualiza todos os itens cadastrados no sistema (doações e vendas). A tela conta com um cabeçalho customizado exibindo a sessão ativa do usuário (Yuri Braga), um banner institucional, a grade de cards dos materiais e um rodapé completo estruturado em colunas com identidade visual e espaço para logotipo estático.
+* **Formulário de Cadastro de Itens (`app/dashboard/novo-item/page.tsx` & `ItemForm.tsx`)**: Dividida entre uma Server Action segura (que lida com o upload físico de imagens para a pasta `public/uploads` e persistência no banco) e um Client Component interativo (que gerencia o estado dinâmico do formulário, alternando entre as finalidades de *Doação* e *Venda* com campo de preço condicional).
+* **Componente de Exclusão com Pop-up (`app/components/DeleteButton.tsx`)**: Componente cliente modularizado responsável por interceptar a ação de exclusão, exibindo um modal de confirmação amigável antes de disparar a Server Action de remoção no banco e revalidar o cache da página.
+
+**Repositório do GitHub**: [Repositório Oficial - ReUse!](https://github.com/YuriBraga-dev/ReUse)
+
+---
+
+## 2. Prisma ORM
+
+O **Prisma ORM** foi aplicado para realizar a comunicação fortemente tipada com o banco de dados, garantindo integridade referencial e segurança nas operações de manipulação de dados executadas através das Server Actions do Next.js.
+
+### Contexto de Utilização nas Telas:
+* **Consulta e Listagem (`findMany`)**: Utilizado na página principal para buscar todos os itens ordenados por data de criação decrescente, incluindo os relacionamentos (`include`) com as tabelas de `Category` (para exibir o nome da categoria) e `User` (para exibir o autor do anúncio).
+* **Cadastro e Persistência (`create`)**: Aplicado na rota de cadastro para salvar novos registros na tabela `Item`, vinculando os dados informados no formulário (título, descrição, categoria, tipo, preço opcional, caminho da imagem e o ID do usuário autenticado). Conta também com verificação de fallback para garantir a existência de um usuário padrão de testes no primeiro acesso.
+* **Exclusão de Registros (`delete`)**: Empregado na Server Action de remoção para deletar um item específico com base no seu ID unicamente gerado, seguido pela revalidação do caminho (`revalidatePath`) para atualizar instantaneamente a interface.
+
+**Repositório de Integração**: [Repositório Oficial (Código Fonte Completo)](https://github.com/YuriBraga-dev/ReUse)
+
+---
+
+## 3. Estrutura do Banco de Dados
+
+O modelo relacional foi desenhado e estruturado utilizando três tabelas principais para suportar o ecossistema da plataforma:
+
+| Tabela | Objetivo Principal | Principais Campos |
+| :--- | :--- | :--- |
+| **User** | Armazena as informações cadastrais dos usuários da plataforma que interagem criando anúncios e realizando operações de reuso. | `id`, `name`, `email`, `password`, `createdAt` |
+| **Category** | Classifica os materiais anunciados em diferentes segmentos (ex: Eletrônicos, Móveis), facilitando a organização do catálogo. | `id`, `name`, `slug`, `createdAt` |
+| **Item** | Registra os materiais disponibilizados para reuso, contendo detalhes descritivos, imagens, finalidade (Doação ou Venda) e valor monetário. | `id`, `title`, `description`, `imageUrl`, `type`, `price`, `userId`, `categoryId`, `createdAt` |
